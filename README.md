@@ -1,17 +1,16 @@
 # Quarkus gRPC Client Extension
 
-Extension to call [gRPC](https://grpc.io/) services in your [Quarkus](https://quarkus.io) application. The extension makes it possible to inject named gRPC channels:
+Extension which makes it easy to to call [gRPC](https://grpc.io/) services in your [Quarkus](https://quarkus.io) application. 
 
 ```java
 @ApplicationScoped
 public class RouteGuideClient {
 
-    @Inject @Channel("route") ManagedChannel channel;
-    private RouteGuideGrpc.RouteGuideBlockingStub blockingStub;
-
-    @PostConstruct
-    void init() {
-        blockingStub = RouteGuideGrpc.newBlockingStub(channel);
+    private RouteGuideBlockingStub blockingStub;
+    
+    @Inject
+    public RouteGuideClient(@Channel("route") ManagedChannel channel) {
+        blockingStub = RouteGuideGrpc.newBlockingStub(channel);    
     }
 
     public Feature getFeature(int lat, int lon) {
@@ -21,20 +20,28 @@ public class RouteGuideClient {
 }
 ```
 
-You have to configure the host and port of your channels in your `application.properties`. The prperty name is made up of `io.quarkus.grpc.client` and the name of the injected channel:  
+The extension makes it possible to inject named [channels](https://grpc.io/docs/guides/concepts.html#channels) into your beans. Each channel has a name and is configured in your `application.properties`:
 
 ```properties
 io.quarkus.grpc.client.route.host=localhost
 io.quarkus.grpc.client.route.port=5050
 ``` 
 
-Right now you can only configure host and port. Channels are created with `usePlaintext()`, but TLS and support for other settings is in the works. Injected channels are created as singletons and automatically shutdown when Quarkus is shutdown. 
+The prperty names are made up of `io.quarkus.grpc.client` plus the name of the channel. Right now you can configure host and port. Channels are created with `usePlaintext()`, but TLS and support for additional settings (like timeouts) is in the works. Injected channels are created as singletons and are automatically shutdown when Quarkus is shutdown. 
 
 ## Getting Started
 
 The gRPC client extension is not available in Maven Central. For now you have to clone the repository and install the extension in your local maven repository. Then follow these steps to write and deploy a simple hello world gRPC service:
 
 ### Setup Project
+
+Create a new project using the Quarkus [archetype](https://quarkus.io/guides/getting-started-guide#bootstrapping-the-project):
+
+```bash
+mvn io.quarkus:quarkus-maven-plugin:0.11.0:create \
+    -DprojectGroupId=io.grpc.helloworld \
+    -DprojectArtifactId=helloworld
+``` 
 
 Add the following dependency to your `pom.xml`:
 
@@ -47,7 +54,7 @@ Add the following dependency to your `pom.xml`:
 </dependency>
 ```
 
-### Setup gRPC Client
+### Setup gRPC
 
 To setup the gRPC code generation, add the following settings to your `pom.xml`:
 
@@ -85,29 +92,31 @@ To setup the gRPC code generation, add the following settings to your `pom.xml`:
 </build>
 ```
 
-### Setup Client
+### Define gRPC Client
 
-You need a running gRPC service you can talk to. See the [Quarkus gRPC extension](https://github.com/hpehl/quarkus-grpc-extension) on how to get your gRPC services up and running. 
-
-In your client code, inject a managed channel and create a blocking and/or asynchronous stub:
+You need a running gRPC service you can talk to. See the [Quarkus gRPC extension](https://github.com/hpehl/quarkus-grpc-extension) on how to get your gRPC services up and running. Then in your client code, inject a managed channel and create a blocking and/or asynchronous stub:
  
 ```java
 @ApplicationScoped
 public class RouteGuideClient {
 
-    @Inject @Channel("route") ManagedChannel channel;
-    private RouteGuideGrpc.RouteGuideBlockingStub blockingStub;
-    private RouteGuideGrpc.RouteGuideStub asyncStub;
-
-    @PostConstruct
-    void init() {
-        blockingStub = RouteGuideGrpc.newBlockingStub(channel);
+    private RouteGuideStub asyncStub;
+    private RouteGuideBlockingStub blockingStub;
+    
+    @Inject
+    public RouteGuideClient(@Channel("route") ManagedChannel channel) {
         asyncStub = RouteGuideGrpc.newStub(channel);
+        blockingStub = RouteGuideGrpc.newBlockingStub(channel);    
+    }
+
+    public Feature getFeature(int lat, int lon) {
+        Point request = Point.newBuilder().setLatitude(lat).setLongitude(lon).build();
+        return blockingStub.getFeature(request);
     }
 }
 ```
 
-Specify the host and port in your `application.properties`:
+Finally specify the host and port in your `application.properties`:
 
 ```properties
 io.quarkus.grpc.client.route.host=localhost
@@ -116,12 +125,12 @@ io.quarkus.grpc.client.route.port=5050
 
 ## Quickstart
 
-If you want to see a more complex example, the [gRPC quickstart](https://github.com/hpehl/quarkus-grpc-quickstart) shows how to use the [Quarkus gRPC](https://github.com/hpehl/quarkus-grpc-extension) and the [Quarkus gRPC client](https://github.com/hpehl/quarkus-grpc-client-extension) extension to implement the [route guide example](https://github.com/grpc/grpc-java/tree/v1.18.0/examples#grpc-examples) provided by [gRPC Java](https://github.com/grpc/grpc-java). 
+If you want to see a more complex example, checkout the [gRPC quickstart](https://github.com/hpehl/quarkus-grpc-quickstart). It uses both the the [gRPC](https://github.com/hpehl/quarkus-grpc-extension) and the [gRPC client](https://github.com/hpehl/quarkus-grpc-client-extension) extension to implement the [route guide example](https://github.com/grpc/grpc-java/tree/v1.18.0/examples#grpc-examples) provided by [gRPC Java](https://github.com/grpc/grpc-java). 
 
 ## What's Missing
 
 - TLS
-- Devmode support
+- Better devmode support
 - More configuration options
 
 See also https://github.com/quarkusio/quarkus/issues/820
