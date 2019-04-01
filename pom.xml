@@ -43,10 +43,10 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <grpc.version>1.18.0</grpc.version>
+        <grpc.version>1.19.0</grpc.version>
         <junit.version>5.4.0</junit.version>
-        <protobuf.version>3.5.1</protobuf.version>
-        <protoc.version>3.5.1-1</protoc.version>
+        <protobuf.version>3.7.0</protobuf.version>
+        <protoc.version>3.7.1</protoc.version>
         <quarkus.version>0.12.0</quarkus.version>
     </properties>
 

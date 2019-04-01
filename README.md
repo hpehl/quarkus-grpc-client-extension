@@ -1,6 +1,6 @@
 # Quarkus gRPC Client Extension
 
-Extension which makes it easy to to call [gRPC](https://grpc.io/) services in your [Quarkus](https://quarkus.io) application. 
+Extension to call [gRPC](https://grpc.io/) services in your [Quarkus](https://quarkus.io) application. 
 
 ```java
 @ApplicationScoped
@@ -20,7 +20,7 @@ public class RouteGuideClient {
 }
 ```
 
-The extension makes it possible to inject named [channels](https://grpc.io/docs/guides/concepts.html#channels) into your beans. Each channel has a name and is configured in your `application.properties`:
+You can inject named [channels](https://grpc.io/docs/guides/concepts.html#channels) into your beans. Each channel has a name and is configured in your `application.properties`:
 
 ```properties
 io.quarkus.grpc.client.route.host=localhost
