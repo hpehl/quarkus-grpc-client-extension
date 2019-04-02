@@ -38,7 +38,7 @@ public class GrpcClientBuildStep {
         feature.produce(new FeatureBuildItem("grpc-client"));
 
         // Register additional beans
-        additionalBeans.produce(new AdditionalBeanBuildItem(false, ChannelProducer.class));
+        additionalBeans.produce(new AdditionalBeanBuildItem(ChannelProducer.class));
         beanDefinitions.produce(new BeanDefiningAnnotationBuildItem(CHANNEL, SINGLETON, false));
 
         // Try to fix "Error: Detected a direct/mapped ByteBuffer in the image heap."

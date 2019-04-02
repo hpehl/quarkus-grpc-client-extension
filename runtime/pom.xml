@@ -24,24 +24,21 @@
         <version>0.12.0</version>
     </parent>
 
-    <artifactId>quarkus-grpc-client-runtime</artifactId>
+    <artifactId>quarkus-grpc-client</artifactId>
     <name>Quarkus - gRPC Client - Runtime</name>
 
     <dependencies>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-arc-runtime</artifactId>
-            <version>${quarkus.version}</version>
+            <artifactId>quarkus-core</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-core-runtime</artifactId>
-            <version>${quarkus.version}</version>
+            <artifactId>quarkus-arc</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-netty-runtime</artifactId>
-            <version>${quarkus.version}</version>
+            <artifactId>quarkus-netty</artifactId>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
@@ -99,7 +96,8 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
+                <groupId>io.quarkus.bootstrap</groupId>
+                <artifactId>bootstrap-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
