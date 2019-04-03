@@ -44,6 +44,8 @@ public class GrpcClientBuildStep {
     private static final Set<DotName> UNREMOVABLE_BEANS = new HashSet<>(asList(
             DotName.createSimple(AbstractChannelProducer.class.getName())));
 
+    GrpcClientConfig config;
+
     @BuildStep
     @Record(STATIC_INIT)
     @SuppressWarnings("unchecked")
@@ -77,8 +79,6 @@ public class GrpcClientBuildStep {
                 (Class<? extends AbstractChannelProducer>) recorder.classProxy(channelProducerClassName), config));
     }
 
-    GrpcClientConfig config;
-
     @BuildStep
     UnremovableBeanBuildItem markBeansAsUnremovable() {
         return new UnremovableBeanBuildItem(beanInfo -> {
@@ -103,7 +103,7 @@ public class GrpcClientBuildStep {
                 .build();
         classCreator.addAnnotation(ApplicationScoped.class);
 
-        // create producer methods (e.g. for named channel "foo"):
+        // create producer methods (e.g. for a named channel "foo"):
         //  @ApplicationScoped
         //  @Produces
         //  @Named("foo")
