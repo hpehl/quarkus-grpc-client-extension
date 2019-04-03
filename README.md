@@ -23,11 +23,11 @@ public class RouteGuideClient {
 You can inject named [channels](https://grpc.io/docs/guides/concepts.html#channels) into your beans. Each channel has a name and is configured in your `application.properties`:
 
 ```properties
-io.quarkus.grpc.client.route.host=localhost
-io.quarkus.grpc.client.route.port=5050
+quarkus.grpc-client.route.host=localhost
+quarkus.grpc-client.route.port=5050
 ``` 
 
-The prperty names are made up of `io.quarkus.grpc.client` plus the name of the channel. Right now you can configure host and port. Channels are created with `usePlaintext()`, but TLS and support for additional settings (like timeouts) is in the works. Injected channels are created as singletons and are automatically shutdown when Quarkus is shutdown. 
+The property names are made up of `quarkus.grpc-client` plus the name of the channel. Right now you can configure host and port. Channels are created with `usePlaintext()` at the moment, but TLS and support for additional settings (like timeouts) is in the works. Injected channels are created as singletons and are automatically shutdown when Quarkus is shutdown. 
 
 ## Getting Started
 
