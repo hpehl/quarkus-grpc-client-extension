@@ -50,7 +50,6 @@ Add the following dependency to your `pom.xml`:
     <groupId>io.quarkus</groupId>
     <artifactId>quarkus-grpc-client</artifactId>
     <version>${quarkus.grpc.client.version}</version>
-    <scope>provided</scope>
 </dependency>
 ```
 
@@ -64,19 +63,19 @@ To setup the gRPC code generation, add the following settings to your `pom.xml`:
         <extension>
             <groupId>kr.motd.maven</groupId>
             <artifactId>os-maven-plugin</artifactId>
-            <version>1.5.0.Final</version>
+            <version>1.6.2</version>
         </extension>
     </extensions>
     <plugins>
         <plugin>
             <groupId>org.xolstice.maven.plugins</groupId>
             <artifactId>protobuf-maven-plugin</artifactId>
-            <version>0.5.1</version>
+            <version>0.6.1</version>
             <configuration>
-                <protocArtifact>com.google.protobuf:protoc:3.5.1-1:exe:${os.detected.classifier}
+                <protocArtifact>com.google.protobuf:protoc:3.7.1:exe:${os.detected.classifier}
                 </protocArtifact>
                 <pluginId>grpc-java</pluginId>
-                <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.18.0:exe:${os.detected.classifier}
+                <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.19.0:exe:${os.detected.classifier}
                 </pluginArtifact>
             </configuration>
             <executions>
@@ -119,8 +118,8 @@ public class RouteGuideClient {
 Finally specify the host and port in your `application.properties`:
 
 ```properties
-io.quarkus.grpc.client.route.host=localhost
-io.quarkus.grpc.client.route.port=5050
+quarkus.grpc-client.route.host=localhost
+quarkus.grpc-client.route.port=5050
 ``` 
 
 ## Quickstart
