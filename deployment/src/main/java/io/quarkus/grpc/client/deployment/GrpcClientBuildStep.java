@@ -63,9 +63,11 @@ public class GrpcClientBuildStep {
         feature.produce(new FeatureBuildItem("grpc-client"));
 
         // Try to fix "Error: Detected a direct/mapped ByteBuffer in the image heap."
+        // runtimeInit.produce(new RuntimeInitializedClassBuildItem("io.netty.handler.codec.http.HttpObjectEncoder"));
+        // runtimeInit.produce(new RuntimeInitializedClassBuildItem("io.netty.handler.ssl.JdkNpnApplicationProtocolNegotiator"));
+        // runtimeInit.produce(new RuntimeInitializedClassBuildItem("io.netty.handler.ssl.ReferenceCountedOpenSslEngine"));
         // runtimeInit.produce(new RuntimeInitializedClassBuildItem("io.netty.channel.DefaultChannelConfig"));
         // runtimeInit.produce(new RuntimeInitializedClassBuildItem("io.netty.channel.socket.DefaultSocketChannelConfig"));
-        // runtimeReinit.produce(new RuntimeReinitializedClassBuildItem("io.netty.channel.socket.nio.NioSocketChannel"));
 
         // Indicates that this extension would like the SSL support to be enabled
         sslNativeSupport.produce(new ExtensionSslNativeSupportBuildItem("grpc-client"));
