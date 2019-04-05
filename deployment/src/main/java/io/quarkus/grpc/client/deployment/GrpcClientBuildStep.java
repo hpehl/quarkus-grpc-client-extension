@@ -46,9 +46,9 @@ public class GrpcClientBuildStep {
 
     GrpcClientConfig config;
 
-    @BuildStep
-    @Record(STATIC_INIT)
     @SuppressWarnings("unchecked")
+    @Record(STATIC_INIT)
+    @BuildStep(providesCapabilities = "io.quarkus.grpc-client")
     public BeanContainerListenerBuildItem build(
             RecorderContext recorder,
             GrpcClientTemplate template,
