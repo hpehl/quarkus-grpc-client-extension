@@ -7,10 +7,10 @@ import io.quarkus.runtime.annotations.ConfigItem;
 public class ChannelConfig {
 
     /** The host */
-    @ConfigItem
+    @ConfigItem(defaultValue = "localhost")
     public String host;
 
     /** The port */
-    @ConfigItem
+    @ConfigItem(defaultValue = "5050")
     public int port;
 }

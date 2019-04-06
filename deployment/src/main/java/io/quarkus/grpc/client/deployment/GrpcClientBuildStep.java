@@ -2,6 +2,7 @@ package io.quarkus.grpc.client.deployment;
 
 import static io.quarkus.deployment.annotations.ExecutionTime.STATIC_INIT;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -23,8 +24,10 @@ import io.quarkus.arc.processor.DotNames;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.Record;
+import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.ExtensionSslNativeSupportBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.deployment.configuration.ConfigurationError;
 import io.quarkus.deployment.recording.RecorderContext;
 import io.quarkus.deployment.util.HashUtil;
 import io.quarkus.gizmo.ClassCreator;
@@ -40,6 +43,9 @@ import io.quarkus.grpc.client.runtime.GrpcClientTemplate;
 
 public class GrpcClientBuildStep {
 
+    private static final String EXTENSION_NAME = "grpc-client";
+    private static final String FQ_EXTENSION_NAME = "io.quarkus." + EXTENSION_NAME;
+
     private static final DotName CHANNEL = DotName.createSimple(Channel.class.getName());
     private static final Set<DotName> UNREMOVABLE_BEANS = new HashSet<>(asList(
             DotName.createSimple(AbstractChannelProducer.class.getName())));
@@ -48,19 +54,29 @@ public class GrpcClientBuildStep {
 
     @SuppressWarnings("unchecked")
     @Record(STATIC_INIT)
-    @BuildStep(providesCapabilities = "io.quarkus.grpc-client")
+    @BuildStep(providesCapabilities = FQ_EXTENSION_NAME)
     public BeanContainerListenerBuildItem build(
             RecorderContext recorder,
             GrpcClientTemplate template,
+            CombinedIndexBuildItem index,
             BuildProducer<FeatureBuildItem> feature,
             // BuildProducer<RuntimeInitializedClassBuildItem> runtimeInit,
-            // BuildProducer<RuntimeReinitializedClassBuildItem> runtimeReinit,
             BuildProducer<ExtensionSslNativeSupportBuildItem> sslNativeSupport,
             BuildProducer<GeneratedBeanBuildItem> generatedBean,
             BuildProducer<BeanContainerListenerBuildItem> beanContainerListener) {
 
+        // Make sure all injected channels are have a configuration
+        Set<String> channelAnnotations = index.getIndex().getAnnotations(CHANNEL).stream()
+                .map(a -> a.value().asString())
+                .collect(toSet());
+        channelAnnotations.removeAll(config.channels.keySet());
+        if (!channelAnnotations.isEmpty()) {
+            throw new ConfigurationError("Missing grpc-client configuration for channels: " + channelAnnotations +
+                    ". Please add " + FQ_EXTENSION_NAME + ".<channel-name>.* settings to your configuration.");
+        }
+
         // Register gRPC feature
-        feature.produce(new FeatureBuildItem("grpc-client"));
+        feature.produce(new FeatureBuildItem(EXTENSION_NAME));
 
         // Try to fix "Error: Detected a direct/mapped ByteBuffer in the image heap."
         // runtimeInit.produce(new RuntimeInitializedClassBuildItem("io.netty.handler.codec.http.HttpObjectEncoder"));
@@ -70,7 +86,7 @@ public class GrpcClientBuildStep {
         // runtimeInit.produce(new RuntimeInitializedClassBuildItem("io.netty.channel.socket.DefaultSocketChannelConfig"));
 
         // Indicates that this extension would like the SSL support to be enabled
-        sslNativeSupport.produce(new ExtensionSslNativeSupportBuildItem("grpc-client"));
+        sslNativeSupport.produce(new ExtensionSslNativeSupportBuildItem(EXTENSION_NAME));
 
         // Generate the ChannelProducer bean
         String channelProducerClassName = AbstractChannelProducer.class.getPackage().getName() + ".ChannelProducer";
@@ -106,10 +122,10 @@ public class GrpcClientBuildStep {
         classCreator.addAnnotation(ApplicationScoped.class);
 
         // create producer methods (e.g. for a named channel "foo"):
-        //  @ApplicationScoped
         //  @Produces
         //  @Named("foo")
         //  @Channel("foo")
+        //  @ApplicationScoped
         //  public ManagedChannel createNamedChannel_0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33() {
         //      return createChannel("foo");
         //  }
@@ -118,8 +134,8 @@ public class GrpcClientBuildStep {
 
             MethodCreator namedChannelMethodCreator = classCreator.getMethodCreator(
                     "createNamedChannel_" + HashUtil.sha1(namedChannel), ManagedChannel.class);
-            namedChannelMethodCreator.addAnnotation(ApplicationScoped.class);
             namedChannelMethodCreator.addAnnotation(Produces.class);
+            namedChannelMethodCreator.addAnnotation(ApplicationScoped.class);
             namedChannelMethodCreator.addAnnotation(AnnotationInstance.create(DotNames.NAMED, null,
                     new AnnotationValue[] { AnnotationValue.createStringValue("value", namedChannel) }));
             namedChannelMethodCreator.addAnnotation(AnnotationInstance.create(CHANNEL, null,
