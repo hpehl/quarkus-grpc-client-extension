@@ -23,7 +23,7 @@ public abstract class AbstractChannelProducer {
         String host = channelConfig.host;
         int port = channelConfig.port;
         ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
-        log.info("Created channel for gRPC service " + name + ": " + host + ":" + port);
+        log.info("Created gRPC channel for service " + name + " using " + host + ":" + port);
         channels.add(channel);
         return channel;
     }
