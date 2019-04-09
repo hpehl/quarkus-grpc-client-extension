@@ -60,7 +60,7 @@ public class GrpcClientBuildStep {
             GrpcClientTemplate template,
             CombinedIndexBuildItem index,
             BuildProducer<FeatureBuildItem> feature,
-            // BuildProducer<RuntimeInitializedClassBuildItem> runtimeInit,
+            BuildProducer<UnremovableBeanBuildItem> unremovableBeans,
             BuildProducer<ExtensionSslNativeSupportBuildItem> sslNativeSupport,
             BuildProducer<GeneratedBeanBuildItem> generatedBean,
             BuildProducer<BeanContainerListenerBuildItem> beanContainerListener) {
@@ -77,6 +77,17 @@ public class GrpcClientBuildStep {
 
         // Register gRPC feature
         feature.produce(new FeatureBuildItem(EXTENSION_NAME));
+
+        // Don't remove necessary beans
+        unremovableBeans.produce(new UnremovableBeanBuildItem(beanInfo -> {
+            Set<Type> types = beanInfo.getTypes();
+            for (Type t : types) {
+                if (UNREMOVABLE_BEANS.contains(t.name())) {
+                    return true;
+                }
+            }
+            return false;
+        }));
 
         // Try to fix "Error: Detected a direct/mapped ByteBuffer in the image heap."
         // runtimeInit.produce(new RuntimeInitializedClassBuildItem("io.netty.handler.codec.http.HttpObjectEncoder"));
@@ -95,19 +106,6 @@ public class GrpcClientBuildStep {
         // Set configuration on ChannelProducer
         return new BeanContainerListenerBuildItem(template.setConfig(
                 (Class<? extends AbstractChannelProducer>) recorder.classProxy(channelProducerClassName), config));
-    }
-
-    @BuildStep
-    UnremovableBeanBuildItem markBeansAsUnremovable() {
-        return new UnremovableBeanBuildItem(beanInfo -> {
-            Set<Type> types = beanInfo.getTypes();
-            for (Type t : types) {
-                if (UNREMOVABLE_BEANS.contains(t.name())) {
-                    return true;
-                }
-            }
-            return false;
-        });
     }
 
     /** Create a producer bean managing the lifecycle of the channels. */
