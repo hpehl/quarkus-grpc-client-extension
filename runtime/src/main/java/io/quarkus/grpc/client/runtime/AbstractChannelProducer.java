@@ -2,12 +2,12 @@ package io.quarkus.grpc.client.runtime;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.annotation.PreDestroy;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import org.jboss.logging.Logger;
 
 public abstract class AbstractChannelProducer {
 
@@ -23,7 +23,7 @@ public abstract class AbstractChannelProducer {
         String host = channelConfig.host;
         int port = channelConfig.port;
         ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
-        log.info("Created gRPC channel for service " + name + " using " + host + ":" + port);
+        log.infof("Created gRPC channel %s:%d for service %s", host, port, name);
         channels.add(channel);
         return channel;
     }
