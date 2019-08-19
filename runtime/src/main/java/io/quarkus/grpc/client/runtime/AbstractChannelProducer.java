@@ -5,10 +5,12 @@ import java.util.List;
 
 import javax.annotation.PreDestroy;
 
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import org.jboss.logging.Logger;
 
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+
+@SuppressWarnings("WeakerAccess")
 public abstract class AbstractChannelProducer {
 
     private static final Logger log = Logger.getLogger("io.quarkus.grpc.client");

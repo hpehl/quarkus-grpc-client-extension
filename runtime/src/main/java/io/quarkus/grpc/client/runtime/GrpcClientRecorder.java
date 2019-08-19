@@ -1,10 +1,10 @@
 package io.quarkus.grpc.client.runtime;
 
 import io.quarkus.arc.runtime.BeanContainerListener;
-import io.quarkus.runtime.annotations.Template;
+import io.quarkus.runtime.annotations.Recorder;
 
-@Template
-public class GrpcClientTemplate {
+@Recorder
+public class GrpcClientRecorder {
 
     public BeanContainerListener setConfig(Class<? extends AbstractChannelProducer> channelProducerClass,
             GrpcClientConfig config) {

@@ -1,11 +1,20 @@
 package io.quarkus.grpc.client.deployment;
 
+import static io.quarkus.deployment.annotations.ExecutionTime.STATIC_INIT;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toSet;
+
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+
+import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.AnnotationValue;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.Type;
 
 import io.grpc.ManagedChannel;
 import io.quarkus.arc.deployment.BeanContainerListenerBuildItem;
@@ -30,15 +39,7 @@ import io.quarkus.grpc.client.Channel;
 import io.quarkus.grpc.client.runtime.AbstractChannelProducer;
 import io.quarkus.grpc.client.runtime.ChannelConfig;
 import io.quarkus.grpc.client.runtime.GrpcClientConfig;
-import io.quarkus.grpc.client.runtime.GrpcClientTemplate;
-import org.jboss.jandex.AnnotationInstance;
-import org.jboss.jandex.AnnotationValue;
-import org.jboss.jandex.DotName;
-import org.jboss.jandex.Type;
-
-import static io.quarkus.deployment.annotations.ExecutionTime.STATIC_INIT;
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toSet;
+import io.quarkus.grpc.client.runtime.GrpcClientRecorder;
 
 public class GrpcClientBuildStep {
 
@@ -56,7 +57,7 @@ public class GrpcClientBuildStep {
     @BuildStep(providesCapabilities = FQ_EXTENSION_NAME)
     public BeanContainerListenerBuildItem build(
             RecorderContext recorder,
-            GrpcClientTemplate template,
+            GrpcClientRecorder template,
             CombinedIndexBuildItem index,
             BuildProducer<FeatureBuildItem> feature,
             BuildProducer<UnremovableBeanBuildItem> unremovableBeans,

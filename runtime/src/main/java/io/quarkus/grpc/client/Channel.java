@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
 
 import javax.inject.Qualifier;
 
+@SuppressWarnings("unused")
 @Target({ METHOD, FIELD, PARAMETER })
 @Retention(RUNTIME)
 @Documented

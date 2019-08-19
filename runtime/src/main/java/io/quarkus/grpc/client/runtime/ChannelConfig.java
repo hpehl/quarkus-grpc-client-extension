@@ -4,6 +4,7 @@ import io.quarkus.runtime.annotations.ConfigGroup;
 import io.quarkus.runtime.annotations.ConfigItem;
 
 @ConfigGroup
+@SuppressWarnings("WeakerAccess")
 public class ChannelConfig {
 
     /** The host */
