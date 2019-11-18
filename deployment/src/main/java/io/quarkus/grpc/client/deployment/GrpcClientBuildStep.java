@@ -66,7 +66,7 @@ public class GrpcClientBuildStep {
             BuildProducer<GeneratedBeanBuildItem> generatedBean,
             BuildProducer<BeanContainerListenerBuildItem> beanContainerListener) {
 
-        // Make sure all injected channels are have a configuration
+        // Make sure all injected channels have a configuration
         Set<String> channelAnnotations = index.getIndex().getAnnotations(CHANNEL).stream()
                 .map(a -> a.value().asString())
                 .collect(toSet());
