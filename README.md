@@ -1,3 +1,9 @@
+:warning: **No longer supported**
+
+This extension is no longer supported. Please use the official gRPC extension which is expected to be released as part of Quarkus 1.5.0.Final: https://github.com/quarkusio/quarkus/tree/master/extensions/grpc
+
+---
+
 # Quarkus gRPC Client Extension
 
 Extension to call [gRPC](https://grpc.io/) services in your [Quarkus](https://quarkus.io) application. 
